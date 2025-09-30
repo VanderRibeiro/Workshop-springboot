@@ -12,6 +12,8 @@ import com.simpla.project.repositories.UserRepository;
 import com.simpla.project.services.exceptions.DatabaseException;
 import com.simpla.project.services.exceptions.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 /* Classe de serviço responsável por conter a lógica de negócio relacionada à entidade User.
 Essa camada faz a mediação entre os controladores (resources) e o repositório.*/
 
@@ -46,9 +48,13 @@ public class UserService {
 	}
 	
 	public User update(Long id, User obj) {
+		try {
 		User entity = repository.getReferenceById(id);
 		updateData(entity, obj);
 		return repository.save(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 	}
 
 	private void updateData(User entity, User obj) {
